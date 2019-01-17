@@ -4,6 +4,7 @@
     "target_path": "kernel/huawei/kiwi"
   },
   {
+    "remote": "github",
     "repository": "ShadySquirrel/proprietary_vendor_huawei",
     "target_path": "vendor/huawei"
   },
