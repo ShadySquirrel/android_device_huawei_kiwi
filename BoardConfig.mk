@@ -41,7 +41,8 @@ TARGET_OTA_ASSERT_DEVICE := kiwi
 
 # Kernel
 BOARD_KERNEL_BASE := 0x80000000
-BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlyprintk
+BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 earlyprintk androidboot.selinux=permissive
+BOARD_KERNEL_CMDLINE += ro.boot.btmacaddr=00:00:00:00:00:00
 BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_SEPARATED_DT := true
@@ -73,27 +74,40 @@ TARGET_BOOTANIMATION_TEXTURE_CACHE := true
 USE_DEVICE_SPECIFIC_CAMERA := true
 TARGET_USES_MEDIA_EXTENSIONS := true
 TARGET_NEEDS_LEGACY_CAMERA_HAL1_DYN_NATIVE_HANDLE := true
+TARGET_PROCESS_SDK_VERSION_OVERRIDE := \
+	/system/bin/mediaserver=23 \
+	/system/vendor/bin/mm-qcamera-daemon=23
 
 # Charger
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
 BACKLIGHT_PATH := /sys/class/leds/lcd-backlight/brightness
 
+# Dexpreopt
+ifeq ($(HOST_OS),linux)
+  ifneq ($(TARGET_BUILD_VARIANT),eng)
+    ifeq ($(WITH_DEXPREOPT),)
+      WITH_DEXPREOPT := true
+      WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY := true
+    endif
+  endif
+endif
+PRODUCT_DEXPREOPT_SPEED_APPS += SystemUI
+
 # Display
 MAX_EGL_CACHE_KEY_SIZE := 12*1024
 MAX_EGL_CACHE_SIZE := 2048*1024
-NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
 OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
+TARGET_ADDITIONAL_GRALLOC_10_USAGE_BITS := 0x02000000
 TARGET_CONTINUOUS_SPLASH_ENABLED := true
 TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
 TARGET_USES_ION := true
-USE_OPENGL_RENDERER := true
 
 # FM
 BOARD_HAVE_QCOM_FM := true
 TARGET_QCOM_NO_FM_FIRMWARE := true
 
 # Fonts
-EXTENDED_FONT_FOOTPRINT := true
+EXCLUDE_SERIF_FONTS := true
 
 # GPS
 TARGET_GPS_HAL_PATH := $(DEVICE_PATH)/gps
@@ -105,11 +119,15 @@ DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/manifest.xml
 TARGET_PROVIDES_LIBLIGHT := true
 
 # Lineage Hardware
-BOARD_HARDWARE_CLASS += $(DEVICE_PATH)/lineagehw
+JAVA_SOURCE_OVERLAYS := org.lineageos.hardware|$(DEVICE_PATH)/lineagehw|**/*.java
+
+# Malloc
+MALLOC_SVELTE := true
 
 # Partitions
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
+TARGET_USES_MKE2FS := true
 BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 # /proc/partitions * 2 * BLOCK_SIZE (512) = size in bytes
@@ -123,7 +141,7 @@ BOARD_FLASH_BLOCK_SIZE := 131072 # blockdev --getbsz /dev/block/mmcblk0p19
 
 # Power
 TARGET_HAS_LEGACY_POWER_STATS := true
-TARGET_HAS_NO_WIFI_STATS := true
+TARGET_HAS_NO_WLAN_STATS := true
 TARGET_USES_INTERACTION_BOOST := true
 TARGET_TAP_TO_WAKE_NODE := /sys/touch_screen/tap_to_wake
 
@@ -153,8 +171,7 @@ TARGET_RELEASETOOLS_EXTENSIONS := $(DEVICE_PATH)/releasetools
 TARGET_RIL_VARIANT := caf
 
 # SELinux
-include device/qcom/sepolicy/sepolicy.mk
-include device/qcom/sepolicy/legacy-sepolicy.mk
+include device/qcom/sepolicy-legacy/sepolicy.mk
 
 BOARD_SEPOLICY_DIRS += \
     device/huawei/kiwi/sepolicy
@@ -163,6 +180,11 @@ BOARD_SEPOLICY_DIRS += \
 TARGET_LD_SHIM_LIBS := \
     /system/vendor/bin/signinfolistener|libshim_signinfolistener.so:\
     /system/vendor/lib/libmmcamera_hdr_gb_lib.so|/system/vendor/lib/libmmqjpeg_codec.so
+
+# TWRP
+TARGET_RECOVERY_DEVICE_DIRS += device/huawei/kiwi/twrp
+TW_INCLUDE_CRYPTO := true
+TW_THEME := portrait_hdpi
 
 # Vendor Init
 TARGET_INIT_VENDOR_LIB := libinit_kiwi

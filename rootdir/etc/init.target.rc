@@ -36,6 +36,9 @@ on early-init
     symlink /data/tombstones /tombstones
     mkdir /log 0770 system log
 
+on init
+    write /sys/module/lpm_levels/parameters/sleep_disabled Y
+
 on fs
     wait /dev/block/platform/soc.0/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc.0/${ro.boot.bootdevice} /dev/block/bootdevice
@@ -43,8 +46,6 @@ on fs
     mount_all /vendor/etc/fstab.qcom --early
 
     swapon_all /vendor/etc/fstab.qcom
-    write /proc/sys/vm/swappiness 100
-    write /proc/sys/vm/page-cluster 0
 
     mkdir /persist/data 0700 system system
     restorecon_recursive /persist
@@ -62,11 +63,24 @@ on fs
 
 on late-fs
     # Start services for bootanim
+    start vendor.configstore-hal
     start surfaceflinger
     start bootanim
-    start configstore-hal-1-0
 
     mount_all /vendor/etc/fstab.qcom --late
+
+    # boot time fs tune
+    write /sys/block/mmcblk0/queue/iostats 0
+    write /sys/block/mmcblk0/queue/read_ahead_kb 2048
+    write /sys/block/mmcblk0/queue/nr_requests 256
+    write /sys/block/mmcblk1/queue/read_ahead_kb 1024
+
+on property:sys.boot_completed=1
+    # end boot time fs tune
+    write /sys/block/mmcblk0/queue/read_ahead_kb 128
+    write /sys/block/mmcblk0/queue/nr_requests 128
+    write /sys/block/mmcblk0/queue/iostats 1 
+    write /sys/block/mmcblk1/queue/read_ahead_kb 128
 
 on post-fs-data
     mkdir /data/tombstones 0771 system system
@@ -81,40 +95,39 @@ on post-fs-data
 
 # Start camera server as daemon
 service qcamerasvr /system/vendor/bin/mm-qcamera-daemon
-    class late_start
+    class main
     user camera
-    group camera system inet input graphics
+    group camera gps system inet input graphics
 
-# Allow usb charging to be disabled peristently
-on property:persist.usb.chgdisabled=1
-    write /sys/class/power_supply/battery/charging_enabled 0
+on property:init.svc.media=restarting
+    restart qcamerasvr
 
-on property:persist.usb.chgdisabled=0
-    write /sys/class/power_supply/battery/charging_enabled 1
+on property:init.svc.servicemanager=restarting
+    restart qcamerasvr
 
 service qseecomd /system/vendor/bin/qseecomd
-   class core
-   user root
-   group root
+    class core
+    user root
+    group root
 
 service perfd /system/vendor/bin/perfd
-   class main
-   user root
-   group system
-   disabled
+    class main
+    user root
+    group system
+    disabled
 
 service thermal-engine /system/vendor/bin/thermal-engine
-   class main
-   user root
-   socket thermal-send-client stream 0666 system system
-   socket thermal-recv-client stream 0660 system system
-   socket thermal-recv-passive-client stream 0666 system system
-   group root
+    class main
+    user root
+    socket thermal-send-client stream 0666 system system
+    socket thermal-recv-client stream 0660 system system
+    socket thermal-recv-passive-client stream 0666 system system
+    group root
 
 service time_daemon /system/vendor/bin/time_daemon
-   class late_start
-   user root
-   group root
+    class late_start
+    user root
+    group root
 
 service ppd /system/vendor/bin/mm-pp-daemon
     class late_start
@@ -157,4 +170,4 @@ on charger
     chmod 0664 /sys/class/power_supply/bms/current_now
     chmod 0664 /sys/class/power_supply/bms/voltage_ocv
     start vm_bms
-    load_all_props
+    load_system_props

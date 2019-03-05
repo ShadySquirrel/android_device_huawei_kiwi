@@ -46,6 +46,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.light.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.light.xml \
     frameworks/native/data/etc/android.hardware.sensor.proximity.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.proximity.xml \
     frameworks/native/data/etc/android.software.app_widgets.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.app_widgets.xml \
+    frameworks/native/data/etc/android.hardware.opengles.aep.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.opengles.aep.xml \
     frameworks/native/data/etc/handheld_core_hardware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/handheld_core_hardware.xml
 
 # Screen density
@@ -58,9 +59,8 @@ TARGET_SCREEN_WIDTH := 1080
 
 # Audio
 PRODUCT_PACKAGES += \
-    android.hardware.audio@2.0-impl \
-    android.hardware.audio.effect@2.0-impl \
-    android.hardware.broadcastradio@1.0-impl \
+    android.hardware.audio@4.0-impl \
+    android.hardware.audio.effect@4.0-impl \
     audio.a2dp.default \
     audio.primary.msm8916 \
     audio.r_submix.default \
@@ -77,43 +77,68 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/audio/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml \
     $(LOCAL_PATH)/audio/audio_platform_info.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_platform_info.xml \
     $(LOCAL_PATH)/audio/audio_policy.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy.conf \
-    $(LOCAL_PATH)/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_skuk.xml
+    $(LOCAL_PATH)/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_skuk.xml \
+    $(LOCAL_PATH)/audio/sound_param/kiw/Bluetooth_cal.acdb:system/etc/sound_param/kiw/Bluetooth_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw/General_cal.acdb:system/etc/sound_param/kiw/General_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw/Global_cal.acdb:system/etc/sound_param/kiw/Global_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw/Handset_cal.acdb:system/etc/sound_param/kiw/Handset_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw/Hdmi_cal.acdb:system/etc/sound_param/kiw/Hdmi_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw/Headset_cal.acdb:system/etc/sound_param/kiw/Headset_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw/Speaker_cal.acdb:system/etc/sound_param/kiw/Speaker_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw/nxp/Tfa9895-AAC.cnt:system/etc/sound_param/kiw/nxp/Tfa9895-AAC.cnt \
+    $(LOCAL_PATH)/audio/sound_param/kiw/nxp/Tfa9895-GD.cnt:system/etc/sound_param/kiw/nxp/Tfa9895-GD.cnt \
+    $(LOCAL_PATH)/audio/sound_param/kiw/nxp/Tfa9895-GK.cnt:system/etc/sound_param/kiw/nxp/Tfa9895-GK.cnt \
+    $(LOCAL_PATH)/audio/sound_param/kiw/nxp/Tfa9895.cnt:system/etc/sound_param/kiw/nxp/Tfa9895.cnt \
+    $(LOCAL_PATH)/audio/sound_param/kiw/nxp/Tfa9895_coefficient.config:system/etc/sound_param/kiw/nxp/Tfa9895_coefficient.config \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/Bluetooth_cal.acdb:system/etc/sound_param/kiw_l/Bluetooth_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/General_cal.acdb:system/etc/sound_param/kiw_l/General_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/Global_cal.acdb:system/etc/sound_param/kiw_l/Global_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/Handset_cal.acdb:system/etc/sound_param/kiw_l/Handset_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/Hdmi_cal.acdb:system/etc/sound_param/kiw_l/Hdmi_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/Headset_cal.acdb:system/etc/sound_param/kiw_l/Headset_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/Speaker_cal.acdb:system/etc/sound_param/kiw_l/Speaker_cal.acdb \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/nxp/Tfa9895-AAC.cnt:system/etc/sound_param/kiw_l/nxp/Tfa9895-AAC.cnt \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/nxp/Tfa9895-GD.cnt:system/etc/sound_param/kiw_l/nxp/Tfa9895-GD.cnt \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/nxp/Tfa9895-GK.cnt:system/etc/sound_param/kiw_l/nxp/Tfa9895-GK.cnt \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/nxp/Tfa9895.cnt:system/etc/sound_param/kiw_l/nxp/Tfa9895.cnt \
+    $(LOCAL_PATH)/audio/sound_param/kiw_l/nxp/Tfa9895_coefficient.config:system/etc/sound_param/kiw_l/nxp/Tfa9895_coefficient.config
 
 # ANT+
 PRODUCT_PACKAGES += \
     AntHalService \
-    com.dsi.ant.antradio_library \
-    libantradio
+    com.dsi.ant.antradio_library
 
 # Bluetooth
 PRODUCT_PACKAGES += \
-    android.hardware.bluetooth@1.0-impl \
+    android.hardware.bluetooth@1.0-service \
     libbt-vendor \
     init.qcom.bt.sh
 
 # Camera
 PRODUCT_PACKAGES += \
-    android.hardware.camera.provider@2.4-impl \
-    camera.device@1.0-impl \
+    android.hardware.camera.provider@2.4-impl-legacy \
+    camera.device@1.0-impl-legacy \
     camera.msm8916 \
     libmm-qcamera \
     Snap
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/external_camera_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/external_camera_config.xml
 
 # Compatibility
 PRODUCT_PACKAGES += \
     libshim_cutils \
     libshim_signinfolistener
 
-# Dalvik
-$(call inherit-product, frameworks/native/build/phone-xxhdpi-2048-dalvik-heap.mk)
-
 # Display
 PRODUCT_PACKAGES += \
     android.hardware.graphics.allocator@2.0-impl \
     android.hardware.graphics.allocator@2.0-service \
+    android.hardware.graphics.composer@2.1-impl \
     android.hardware.graphics.mapper@2.0-impl \
     android.hardware.memtrack@1.0-impl \
     android.hardware.memtrack@1.0-service \
+    android.hardware.configstore@1.0-service \
     gralloc.msm8916 \
     hwcomposer.msm8916 \
     libtinyxml \
@@ -162,6 +187,16 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/gps/gps.conf:system/etc/gps.conf \
     $(LOCAL_PATH)/gps/izat.conf:system/etc/izat.conf \
     $(LOCAL_PATH)/gps/sap.conf:system/etc/sap.conf
+    
+# HIDL
+PRODUCT_PACKAGES += \
+    android.hidl.base@1.0 \
+    android.hidl.manager@1.0
+
+# Health
+PRODUCT_PACKAGES += \
+    android.hardware.health@2.0-impl \
+    android.hardware.health@2.0-service
 
 # IRSC
 PRODUCT_COPY_FILES += \
@@ -182,6 +217,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.light@2.0-service.kiwi
 
+# LiveDisplay
+PRODUCT_PACKAGES += \
+    vendor.lineage.livedisplay@2.0-service-legacymm \
+    vendor.lineage.livedisplay@2.0-service-sysfs
+
 # Media
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/media_profiles_V1_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_V1_0.xml \
@@ -189,7 +229,7 @@ PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_video.xml \
     $(LOCAL_PATH)/configs/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
-    $(LOCAL_PATH)/configs/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance.xml
+    $(LOCAL_PATH)/configs/media_codecs_performance.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_performance.xml
 
 PRODUCT_PACKAGES += \
     libdashplayer \
@@ -204,11 +244,12 @@ PRODUCT_PACKAGES += \
 
 # Power HAL
 PRODUCT_PACKAGES += \
-    android.hardware.power@1.0-service-qti
+    android.hardware.power@1.1-service-qti
 
 # Radio
 PRODUCT_PACKAGES += \
-    qti-telephony-common
+    qti-telephony-common \
+    telephony-ext
 
 PRODUCT_BOOT_JARS += \
     telephony-ext
@@ -221,6 +262,7 @@ PRODUCT_PACKAGES += \
     init.qcom.power.rc \
     init.qcom.power.sh \
     init.qcom.usb.rc \
+    init.recovery.qcom.rc \
     init.target-from-init.rc \
     init.target.rc \
     ueventd.qcom.rc
@@ -260,9 +302,13 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/thermal-engine.conf:$(TARGET_COPY_OUT_VENDOR)/etc/thermal-engine.conf
 
+# Trust
+PRODUCT_PACKAGES += \
+    vendor.lineage.trust@1.0-service
+
 # USB
 PRODUCT_PACKAGES += \
-    android.hardware.usb@1.0-service \
+    android.hardware.usb@1.0-service.basic \
     com.android.future.usb.accessory
 
 # Vibrator
